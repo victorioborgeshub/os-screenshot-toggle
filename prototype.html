@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screenshots Settings — HUB-16514 Prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --z-blue-50:  #eaf6ff;
+    --z-blue-100: #d4edff;
+    --z-blue-200: #a7d9fc;
+    --z-blue-300: #76c2fb;
+    --z-blue-400: #45abf9;
+    --z-blue-500: #2aa7ff;
+    --z-blue-600: #1a8fe0;
+    --z-blue-700: #0168dd;
+    --z-blue-900: #1f2e54;
+
+    --z-gray-50:  #f9fafb;
+    --z-gray-100: #f3f4f6;
+    --z-gray-200: #e5e7eb;
+    --z-gray-300: #d1d5db;
+    --z-gray-400: #9ca3af;
+    --z-gray-500: #6b7280;
+    --z-gray-600: #4b5563;
+    --z-gray-700: #374151;
+    --z-gray-800: #1f2937;
+    --z-gray-900: #111827;
+
+    --hs-primary:       #2f8af4;
+    --hs-primary-hover: #1a7ae0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: var(--z-gray-900); background: #fff; }
+
+  /* Breadcrumb */
+  .breadcrumb { padding: 12px 24px; font-size: 13px; color: var(--z-gray-500); border-bottom: 1px solid var(--z-gray-200); background: #fff; }
+  .breadcrumb span { color: var(--z-gray-700); }
+  .breadcrumb .sep { margin: 0 6px; }
+
+  /* Page header */
+  .page-header { padding: 20px 24px 0; }
+  .page-header-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 600; color: var(--z-gray-900); margin-bottom: 20px; }
+  .page-header-title svg { color: var(--hs-primary); }
+
+  /* Top tabs */
+  .top-tabs { display: flex; border-bottom: 1px solid var(--z-gray-200); padding: 0 24px; }
+  .top-tab { padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--z-gray-500); cursor: pointer; border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.04em; }
+  .top-tab.active { color: var(--hs-primary); border-bottom-color: var(--hs-primary); }
+  .top-tab:hover:not(.active) { color: var(--z-gray-700); }
+
+  /* Layout */
+  .layout { display: flex; min-height: calc(100vh - 130px); }
+
+  /* Left sidebar */
+  .sidebar { width: 220px; padding: 20px 0; border-right: 1px solid var(--z-gray-200); flex-shrink: 0; }
+  .sidebar-item { padding: 8px 20px; font-size: 14px; color: var(--z-gray-500); cursor: pointer; position: relative; }
+  .sidebar-item:hover:not(.active) { color: var(--z-gray-700); }
+  .sidebar-item.active { color: var(--hs-primary); font-weight: 500; }
+  .sidebar-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--hs-primary); border-radius: 0 2px 2px 0; }
+
+  /* Content */
+  .content { flex: 1; padding: 24px 32px; max-width: 960px; }
+
+  /* Upsell banner */
+  .upsell { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border: 1px solid var(--z-gray-200); border-radius: 8px; margin-bottom: 28px; }
+  .upsell-icon { width: 36px; height: 36px; background: var(--z-blue-50); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .upsell-icon svg { color: var(--hs-primary); }
+  .upsell-text { flex: 1; }
+  .upsell-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .upsell-text span { font-size: 13px; color: var(--z-gray-500); }
+  .btn-primary { background: var(--hs-primary); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .btn-primary:hover { background: var(--hs-primary-hover); }
+
+  /* Section heading */
+  .section-label { font-size: 11px; font-weight: 600; color: var(--z-gray-500); letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .section-desc { font-size: 13px; color: var(--z-gray-500); margin-bottom: 16px; }
+
+  /* Info icon */
+  .info-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--z-gray-400); color: var(--z-gray-400); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor: default; flex-shrink: 0; }
+
+  /* Global row */
+  .global-row { margin-bottom: 32px; }
+  .global-label { font-size: 11px; font-weight: 600; color: var(--z-gray-500); letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+
+  /* Dropdown */
+  .select-wrap { display: flex; align-items: center; gap: 10px; }
+  select { appearance: none; border: 1px solid var(--z-gray-300); border-radius: 6px; padding: 6px 32px 6px 12px; font-size: 14px; color: var(--z-gray-900); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center; cursor: pointer; min-width: 120px; }
+  select:focus { outline: none; border-color: var(--hs-primary); }
+
+  /* Segmented toggle (blur style) */
+  .seg-toggle { display: inline-flex; border: 1px solid var(--z-gray-300); border-radius: 6px; overflow: hidden; }
+  .seg-toggle button { padding: 6px 16px; border: none; background: #fff; color: var(--z-gray-500); cursor: pointer; font-size: 13px; }
+  .seg-toggle button.active { background: var(--z-gray-50); color: var(--z-gray-900); font-weight: 500; box-shadow: inset 0 0 0 1px var(--z-gray-300); }
+
+  /* Toggle switch — matches .toggle-switch-wrapper / .toggle-switch from _button-group.scss */
+  .toggle-switch-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+  .toggle-switch-wrapper input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-switch { width: 32px; height: 16px; background: var(--z-gray-300); border-radius: 20px; position: relative; transition: background 0.15s ease; flex-shrink: 0; }
+  .toggle-switch::before { content: ''; position: absolute; width: 12px; height: 12px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: transform 0.15s ease; }
+  .toggle-switch-wrapper input:checked + .toggle-switch { background: var(--hs-primary); }
+  .toggle-switch-wrapper input:checked + .toggle-switch::before { transform: translateX(16px); }
+
+  /* Individual settings */
+  .individuals-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .individuals-title { font-size: 16px; font-weight: 600; }
+  .search-box { display: flex; align-items: center; gap: 8px; border: 1px solid var(--z-gray-300); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--z-gray-400); }
+  .search-box svg { flex-shrink: 0; }
+  .individuals-desc { font-size: 13px; color: var(--z-gray-400); margin-bottom: 16px; }
+
+  /* Members table */
+  .members-table { width: 100%; border-collapse: collapse; }
+  .members-table th { text-align: left; font-size: 13px; font-weight: 500; color: var(--z-gray-700); padding: 10px 0; border-bottom: 1px solid var(--z-gray-200); }
+  .members-table td { padding: 12px 0; border-bottom: 1px solid var(--z-gray-100); vertical-align: middle; }
+  .member-cell { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: var(--z-gray-200); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--z-gray-500); flex-shrink: 0; overflow: hidden; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar.blue { background: var(--z-blue-50); color: var(--hs-primary); }
+  .member-name { font-size: 14px; color: var(--z-gray-900); }
+  .control-cell { text-align: right; }
+  .showing-count { font-size: 13px; color: var(--z-gray-400); margin-top: 12px; }
+
+  /* OS toggle page */
+  .os-toggles { display: flex; flex-direction: column; border: 1px solid var(--z-gray-200); border-radius: 8px; overflow: hidden; margin-bottom: 24px; }
+  .os-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: #fff; border-bottom: 1px solid var(--z-gray-200); }
+  .os-row:last-child { border-bottom: none; }
+  .os-row-left { display: flex; align-items: center; gap: 12px; }
+  .os-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--z-gray-700); }
+  .os-name { font-size: 14px; font-weight: 500; color: var(--z-gray-900); }
+  .os-desc { font-size: 14px; color: var(--z-gray-600); margin-top: 2px; }
+  .os-row-left { transition: opacity 0.2s ease; }
+  .os-row-left.dimmed { opacity: 0.4; }
+
+  /* Alert component — matches .alert / .alert-info from _alerts.scss */
+  .alert { padding: 12px 16px; border-radius: 8px; border: 1px solid; font-size: 13px; }
+  .alert-inner-wrapper { display: flex; align-items: flex-start; gap: 10px; }
+  .alert-body { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+  .alert-info { color: var(--z-blue-700); background: var(--z-blue-50); border-color: var(--z-blue-500); }
+  .alert-info i { margin-top: 1px; flex-shrink: 0; }
+  .alert-title { font-weight: 600; margin-bottom: 3px; }
+
+  /* Blur row control */
+  .blur-row-control { display: inline-flex; border: 1px solid var(--z-gray-300); border-radius: 6px; overflow: hidden; }
+  .blur-row-control button { padding: 5px 12px; border: none; background: #fff; color: var(--z-gray-400); cursor: pointer; font-size: 13px; }
+  .blur-row-control button.active { background: var(--z-gray-50); color: var(--z-gray-900); font-weight: 500; }
+
+  /* Page visibility */
+  .page { display: none; }
+  .page.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">Settings <span class="sep">›</span> Activity &amp; tracking <span class="sep">›</span> <span>Screenshots</span></div>
+
+<!-- Page header -->
+<div class="page-header">
+  <div class="page-header-title">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/><path d="M12 8v4l3 3"/></svg>
+    Activity &amp; tracking
+  </div>
+</div>
+
+<!-- Top tabs -->
+<div class="top-tabs">
+  <div class="top-tab">Activity</div>
+  <div class="top-tab">Timesheets</div>
+  <div class="top-tab">Time &amp; tracking</div>
+  <div class="top-tab active">Screenshots</div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-item" onclick="showPage('frequency', this)">Screenshot frequency</div>
+    <div class="sidebar-item" onclick="showPage('blur', this)">Screenshot blur</div>
+    <div class="sidebar-item" onclick="showPage('delete', this)">Delete screenshots</div>
+    <div class="sidebar-item active" onclick="showPage('os', this)">Screenshots per OS</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- PAGE: Screenshot frequency -->
+    <div class="page" id="page-frequency">
+      <div class="upsell">
+        <div class="upsell-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="upsell-text">
+          <strong>More screenshots</strong>
+          <span>Boost compliance and security with increased screenshot frequency. Get the More Screenshots add-on to capture up to ten screenshots every ten minutes</span>
+        </div>
+        <button class="btn-primary">Add add-on</button>
+      </div>
+
+      <div class="global-row">
+        <div class="section-label">Screenshot frequency <span class="info-icon">i</span></div>
+        <div class="section-desc">Control the number of screenshots taken in a 10 minute period.</div>
+        <div class="global-label">Global <span class="info-icon">i</span></div>
+        <div class="select-wrap">
+          <select>
+            <option>None</option>
+            <option>1x</option>
+            <option>2x</option>
+            <option selected>3x</option>
+          </select>
+          <button class="btn-primary">Apply to all</button>
+        </div>
+      </div>
+
+      <div class="individuals-header">
+        <div class="individuals-title">Individual settings</div>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search members
+        </div>
+      </div>
+      <div class="individuals-desc">Override the organization default for specific members</div>
+
+      <table class="members-table">
+        <thead><tr><th>Name</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=andy" alt=""></div><span class="member-name">Andy Traegar</span></div></td><td class="control-cell"><select><option>None</option><option selected>1x</option><option>2x</option><option>3x</option></select></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=anne" alt=""></div><span class="member-name">Anne Beasley</span></div></td><td class="control-cell"><select><option>None</option><option>1x</option><option selected>2x</option><option>3x</option></select></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar blue">A</div><span class="member-name">asd asd</span></div></td><td class="control-cell"><select><option>None</option><option>1x</option><option>2x</option><option selected>3x</option></select></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=ben" alt=""></div><span class="member-name">Ben Scott</span></div></td><td class="control-cell"><select><option selected>None</option><option>1x</option><option>2x</option><option>3x</option></select></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=chris" alt=""></div><span class="member-name">Chris Malone</span></div></td><td class="control-cell"><select><option>None</option><option>1x</option><option>2x</option><option selected>3x</option></select></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=karen" alt=""></div><span class="member-name">Karen Perkins</span></div></td><td class="control-cell"><select><option>None</option><option>1x</option><option>2x</option><option selected>3x</option></select></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGE: Screenshot blur -->
+    <div class="page" id="page-blur">
+      <div class="global-row">
+        <div class="section-label">Screenshot blur <span class="info-icon">i</span></div>
+        <div class="section-desc">Control whether the desktop app blurs screenshots for security and privacy.</div>
+        <div class="global-label">Global <span class="info-icon">i</span></div>
+        <div class="seg-toggle" id="blur-global">
+          <button class="active" onclick="segToggle('blur-global', 0)">Off</button>
+          <button onclick="segToggle('blur-global', 1)">On</button>
+        </div>
+      </div>
+
+      <div class="individuals-header">
+        <div class="individuals-title">Individual settings</div>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search members
+        </div>
+      </div>
+      <div class="individuals-desc">Override the organization default for specific members</div>
+
+      <table class="members-table">
+        <thead><tr><th>Name</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=andy" alt=""></div><span class="member-name">Andy Traegar</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=anne" alt=""></div><span class="member-name">Anne Beasley</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar blue">A</div><span class="member-name">asd asd</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=ben" alt=""></div><span class="member-name">Ben Scott</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=chris" alt=""></div><span class="member-name">Chris Malone</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=karen" alt=""></div><span class="member-name">Karen Perkins</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=leslie" alt=""></div><span class="member-name">Leslie Halpert</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=pam" alt=""></div><span class="member-name">Pam Dwyer</span></div></td><td class="control-cell"><div class="blur-row-control"><button onclick="rowSeg(this, 0)">Off</button><button class="active" onclick="rowSeg(this, 1)">On</button></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGE: Delete screenshots -->
+    <div class="page" id="page-delete">
+      <div class="global-row">
+        <div class="section-label">Delete screenshots <span class="info-icon">i</span></div>
+        <div class="section-desc">This setting allows Owners, Organization managers, Team leads with permission and Project managers to delete screenshots for themselves and other team members</div>
+        <div class="global-label">Global <span class="info-icon">i</span></div>
+        <label class="toggle-switch-wrapper"><input type="checkbox" checked><div class="toggle-switch"></div></label>
+      </div>
+
+      <div class="individuals-header">
+        <div class="individuals-title">Individual settings</div>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search members
+        </div>
+      </div>
+      <div class="individuals-desc">Override the organization default for specific members</div>
+
+      <table class="members-table">
+        <thead><tr><th>Name</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=anneb" alt=""></div><span class="member-name">Anne Beasley</span></div></td><td class="control-cell"><label class="toggle-switch-wrapper"><input type="checkbox" checked><div class="toggle-switch"></div></label></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar blue">A</div><span class="member-name">asd asd</span></div></td><td class="control-cell"><label class="toggle-switch-wrapper"><input type="checkbox" checked><div class="toggle-switch"></div></label></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=user2" alt=""></div><span class="member-name">user 2</span></div></td><td class="control-cell"><label class="toggle-switch-wrapper"><input type="checkbox" checked><div class="toggle-switch"></div></label></td></tr>
+          <tr><td><div class="member-cell"><div class="avatar"><img src="https://i.pravatar.cc/30?u=victorio" alt=""></div><span class="member-name">Victório Borges</span></div></td><td class="control-cell"><label class="toggle-switch-wrapper"><input type="checkbox" checked><div class="toggle-switch"></div></label></td></tr>
+        </tbody>
+      </table>
+      <div class="showing-count">Showing 4 of 4 members</div>
+    </div>
+
+    <!-- PAGE: Screenshots per OS (new) -->
+    <div class="page active" id="page-os">
+      <div class="global-row">
+        <div class="section-label">Screenshots per OS</div>
+        <div class="section-desc">Control whether screenshots are captured on each operating system.<br>Disabling an OS overrides individual member settings — no screenshots will be taken on that platform regardless of member configuration.</div>
+      </div>
+
+      <div class="alert alert-info" style="margin-bottom:20px;">
+        <div class="alert-inner-wrapper">
+          <div class="alert-body">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+              <div class="alert-title">OS settings override member settings</div>
+              <div>Turning off an operating system stops screenshot capture for everyone on that platform — even members with screenshots enabled.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="os-toggles">
+        <div class="os-row">
+          <div class="os-row-left">
+            <div class="os-icon"><i class="fa-brands fa-apple" style="font-size:22px;"></i></div>
+            <div>
+              <div class="os-name">macOS</div>
+              <div class="os-desc" id="desc-mac">Taking screenshots for all members on macOS</div>
+            </div>
+          </div>
+          <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-mac" onchange="updateDesc('mac', 'macOS', this.checked, this)"><div class="toggle-switch"></div></label>
+        </div>
+        <div class="os-row">
+          <div class="os-row-left">
+            <div class="os-icon"><i class="fa-brands fa-windows" style="font-size:22px;"></i></div>
+            <div>
+              <div class="os-name">Windows</div>
+              <div class="os-desc" id="desc-win">Taking screenshots for all members on Windows</div>
+            </div>
+          </div>
+          <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-win" onchange="updateDesc('win', 'Windows', this.checked, this)"><div class="toggle-switch"></div></label>
+        </div>
+        <div class="os-row">
+          <div class="os-row-left">
+            <div class="os-icon"><i class="fa-brands fa-linux" style="font-size:22px;"></i></div>
+            <div>
+              <div class="os-name">Linux</div>
+              <div class="os-desc" id="desc-linux">Taking screenshots for all members on Linux</div>
+            </div>
+          </div>
+          <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-linux" onchange="updateDesc('linux', 'Linux', this.checked, this)"><div class="toggle-switch"></div></label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function segToggle(containerId, index) {
+    const btns = document.getElementById(containerId).querySelectorAll('button');
+    btns.forEach((b, i) => b.classList.toggle('active', i === index));
+  }
+
+  function rowSeg(btn, index) {
+    const btns = btn.parentElement.querySelectorAll('button');
+    btns.forEach((b, i) => b.classList.toggle('active', i === index));
+  }
+
+  function updateDesc(id, osName, isOn, input) {
+    document.getElementById('desc-' + id).textContent = isOn
+      ? `Taking screenshots for all members on ${osName}`
+      : `Not taking screenshots for members on ${osName}`;
+    input.closest('.os-row').querySelector('.os-row-left').classList.toggle('dimmed', !isOn);
+  }
+</script>
+</body>
+</html>

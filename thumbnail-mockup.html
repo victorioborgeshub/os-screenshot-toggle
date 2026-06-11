@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screenshot Thumbnail States — HUB-16514</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --z-gray-50:  #f9fafb;
+    --z-gray-100: #f3f4f6;
+    --z-gray-200: #e5e7eb;
+    --z-gray-300: #d1d5db;
+    --z-gray-400: #9ca3af;
+    --z-gray-500: #6b7280;
+    --z-gray-600: #4b5563;
+    --z-gray-700: #374151;
+    --z-gray-900: #111827;
+    --z-red-600:  #e02424;
+    --hs-primary: #2f8af4;
+    --activity-bar: #f6ad55;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--z-gray-100);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+
+  /* Outer centered card */
+  .container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 40px 48px;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* Page title */
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--z-gray-900);
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--z-gray-500);
+    margin-top: 4px;
+  }
+
+  /* Section */
+  .section { display: flex; flex-direction: column; gap: 20px; }
+
+  .section-heading {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--z-gray-900);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--z-gray-200);
+  }
+
+  .thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+  .thumbnails.nowrap {
+    flex-wrap: nowrap;
+  }
+
+  /* Column */
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .col-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--z-gray-700);
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+
+  /* ── Thumbnail card ── */
+  .card {
+    width: 260px;
+    background: #fff;
+    border-radius: 2px;
+    border: 1px solid var(--z-gray-200);
+    overflow: hidden;
+    box-shadow: none;
+  }
+
+  .card-project {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 16px 6px;
+    gap: 3px;
+  }
+  .project-badge {
+    background: var(--z-gray-100);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--z-gray-700);
+  }
+  .no-todos {
+    font-size: 12px;
+    color: var(--z-gray-400);
+  }
+
+  .screenshot-area {
+    margin: 0 16px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--z-gray-200);
+    aspect-ratio: unset;
+    height: 155px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .screenshot-area.has-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .broken-icon {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    color: var(--z-gray-400);
+  }
+  .broken-icon .x-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: var(--z-gray-400);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 700;
+  }
+
+  .no-screenshot-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--z-gray-500);
+  }
+  .reason-label {
+    font-size: 12px;
+    color: var(--z-gray-500);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .reason-label.disabled {
+    color: var(--z-gray-500);
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .card-footer {
+    padding: 8px 16px 16px;
+  }
+  .time-range {
+    font-size: 12px;
+    color: var(--z-gray-600);
+    margin-bottom: 5px;
+  }
+  .activity-bar-track {
+    height: 4px;
+    background: var(--z-gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .activity-bar-fill {
+    height: 100%;
+    width: 47%;
+    background: var(--activity-bar);
+    border-radius: 4px;
+  }
+  .activity-pct {
+    font-size: 11px;
+    color: var(--z-gray-400);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div>
+    <div class="page-title">Screenshot thumbnail states</div>
+    <div class="page-subtitle">HUB-16514 — exploring how the thumbnail communicates the reason for no screenshot</div>
+  </div>
+
+  <!-- Existing states -->
+  <div class="section">
+    <div class="section-heading">Existing states</div>
+    <div class="thumbnails">
+
+      <div class="col">
+        <span class="col-label">Normal</span>
+        <div class="card">
+          <div class="card-project">
+            <span class="project-badge">Default project</span>
+            <span class="no-todos">No to-dos</span>
+          </div>
+          <div class="screenshot-area has-image">
+            <img src="https://picsum.photos/seed/hs1/400/250" alt="">
+          </div>
+          <div class="card-footer">
+            <div class="time-range">6:00 am – 6:10 am</div>
+            <div class="activity-bar-track"><div class="activity-bar-fill"></div></div>
+            <div class="activity-pct">47% of 19 seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <span class="col-label">Frequency 0</span>
+        <div class="card">
+          <div class="card-project">
+            <span class="project-badge">Default project</span>
+            <span class="no-todos">No to-dos</span>
+          </div>
+          <div class="screenshot-area">
+            <div class="broken-icon">
+              <i class="fa-regular fa-image" style="font-size:32px;"></i>
+              <div class="x-badge">✕</div>
+            </div>
+            <span class="no-screenshot-label">No screenshot</span>
+            <span class="reason-label">Screenshot frequency 0</span>
+          </div>
+          <div class="card-footer">
+            <div class="time-range">6:00 am – 6:10 am</div>
+            <div class="activity-bar-track"><div class="activity-bar-fill"></div></div>
+            <div class="activity-pct">47% of 19 seconds</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- New states -->
+  <div class="section">
+    <div class="section-heading">New states — OS disabled</div>
+    <div class="thumbnails nowrap">
+
+      <div class="col">
+        <span class="col-label">macOS disabled</span>
+        <div class="card">
+          <div class="card-project">
+            <span class="project-badge">Default project</span>
+            <span class="no-todos">No to-dos</span>
+          </div>
+          <div class="screenshot-area">
+            <div class="broken-icon">
+              <i class="fa-regular fa-image" style="font-size:32px;"></i>
+              <div class="x-badge">✕</div>
+            </div>
+            <span class="no-screenshot-label">No screenshot</span>
+            <span class="reason-label disabled">Screenshots disabled<span>on macOS</span></span>
+          </div>
+          <div class="card-footer">
+            <div class="time-range">6:00 am – 6:10 am</div>
+            <div class="activity-bar-track"><div class="activity-bar-fill"></div></div>
+            <div class="activity-pct">47% of 19 seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <span class="col-label">Windows disabled</span>
+        <div class="card">
+          <div class="card-project">
+            <span class="project-badge">Default project</span>
+            <span class="no-todos">No to-dos</span>
+          </div>
+          <div class="screenshot-area">
+            <div class="broken-icon">
+              <i class="fa-regular fa-image" style="font-size:32px;"></i>
+              <div class="x-badge">✕</div>
+            </div>
+            <span class="no-screenshot-label">No screenshot</span>
+            <span class="reason-label disabled">Screenshots disabled<span>on Windows</span></span>
+          </div>
+          <div class="card-footer">
+            <div class="time-range">6:00 am – 6:10 am</div>
+            <div class="activity-bar-track"><div class="activity-bar-fill"></div></div>
+            <div class="activity-pct">47% of 19 seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <span class="col-label">Linux disabled</span>
+        <div class="card">
+          <div class="card-project">
+            <span class="project-badge">Default project</span>
+            <span class="no-todos">No to-dos</span>
+          </div>
+          <div class="screenshot-area">
+            <div class="broken-icon">
+              <i class="fa-regular fa-image" style="font-size:32px;"></i>
+              <div class="x-badge">✕</div>
+            </div>
+            <span class="no-screenshot-label">No screenshot</span>
+            <span class="reason-label disabled">Screenshots disabled<span>on Linux</span></span>
+          </div>
+          <div class="card-footer">
+            <div class="time-range">6:00 am – 6:10 am</div>
+            <div class="activity-bar-track"><div class="activity-bar-fill"></div></div>
+            <div class="activity-pct">47% of 19 seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <span class="col-label">Disabled — general</span>
+        <div class="card">
+          <div class="card-project">
+            <span class="project-badge">Default project</span>
+            <span class="no-todos">No to-dos</span>
+          </div>
+          <div class="screenshot-area">
+            <div class="broken-icon">
+              <i class="fa-regular fa-image" style="font-size:32px;"></i>
+              <div class="x-badge">✕</div>
+            </div>
+            <span class="no-screenshot-label">No screenshot</span>
+            <span class="reason-label disabled">Screenshots disabled<span>on operating system</span></span>
+          </div>
+          <div class="card-footer">
+            <div class="time-range">6:00 am – 6:10 am</div>
+            <div class="activity-bar-track"><div class="activity-bar-fill"></div></div>
+            <div class="activity-pct">47% of 19 seconds</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
