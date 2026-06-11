@@ -180,7 +180,10 @@
   .individuals-title { font-size: 16px; font-weight: 600; }
   .search-box { display: flex; align-items: center; gap: 8px; border: 1px solid var(--z-gray-300); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--z-gray-400); }
   .search-box svg { flex-shrink: 0; }
-  .individuals-desc { font-size: 13px; color: var(--z-gray-400); margin-bottom: 16px; }
+  .individuals-desc { font-size: 13px; color: var(--z-gray-500); margin-bottom: 8px; }
+  .individuals-note { font-size: 13px; color: var(--z-gray-500); margin-bottom: 16px; }
+  .note-link { color: var(--hs-primary); text-decoration: none; cursor: pointer; }
+  .note-link:hover { text-decoration: underline; }
 
   .members-table { width: 100%; border-collapse: collapse; }
   .members-table th { text-align: left; font-size: 13px; font-weight: 500; color: var(--z-gray-700); padding: 10px 0; border-bottom: 1px solid var(--z-gray-200); }
@@ -339,7 +342,7 @@
         </div>
         <div class="global-row">
           <div class="section-label">Screenshot frequency <span class="info-icon">i</span></div>
-          <div class="section-desc">Control the number of screenshots taken in a 10 minute period.</div>
+          <div class="individuals-note">Control the number of screenshots taken in a 10 minute period.<br>OS settings override individual member frequency. <a class="note-link" onclick="goToOsPage()">View OS settings</a></div>
           <div class="global-label">Global <span class="info-icon">i</span></div>
           <div class="select-wrap">
             <select><option>None</option><option>1x</option><option>2x</option><option selected>3x</option></select>
@@ -605,6 +608,11 @@
     document.querySelectorAll('.proto-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('view-' + id).classList.add('active');
     btn.classList.add('active');
+  }
+
+  function goToOsPage() {
+    const osItem = document.querySelector('.sidebar-item:last-child');
+    showPage('os', osItem);
   }
 
   function showPage(id, el) {
