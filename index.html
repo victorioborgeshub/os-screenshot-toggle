@@ -154,6 +154,29 @@
   .btn-primary { background: var(--hs-primary); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
   .btn-primary:hover { background: var(--hs-primary-hover); }
 
+  /* ── Confirmation modal (Zone style) ─────────────────────── */
+  dialog.confirm-modal {
+    position: fixed; top: 0; left: 0; width: 100%; max-width: 550px;
+    margin: 80px auto 0; padding: 20px; background: #fff;
+    border: none; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+  dialog.confirm-modal::backdrop { background: rgba(107,114,128,0.4); }
+  .cm-form { display: flex; flex-direction: column; gap: 20px; }
+  .cm-body { display: flex; flex-direction: column; gap: 16px; color: var(--z-gray-700); font-size: 14px; }
+  .cm-header { display: flex; justify-content: space-between; align-items: center; }
+  .cm-title { font-size: 16px; font-weight: 700; color: var(--z-gray-900); }
+  .cm-close { background: none; border: none; cursor: pointer; color: var(--z-gray-500); font-size: 18px; line-height: 1; padding: 2px 6px; border-radius: 4px; }
+  .cm-close:hover { background: var(--z-gray-100); }
+  .cm-message { display: flex; align-items: flex-start; gap: 16px; }
+  .cm-icon-wrap { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+  .cm-icon-wrap.warning { background: #fef9c3; color: #a16207; }
+  .cm-icon-wrap.info    { background: var(--z-blue-50); color: var(--z-blue-700); }
+  .cm-footer { display: flex; align-items: center; justify-content: flex-end; gap: 20px; }
+  .cm-btn-cancel { background: none; border: 1px solid var(--z-gray-300); color: var(--z-gray-700); padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .cm-btn-cancel:hover { background: var(--z-gray-50); }
+  .cm-btn-confirm { border: none; padding: 9px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; color: #fff; background: #ca8a04; }
+  .cm-btn-confirm:hover { background: #a16207; }
+
   .section-label { font-size: 11px; font-weight: 600; color: var(--z-gray-500); letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
   .section-desc { font-size: 13px; color: var(--z-gray-500); margin-bottom: 16px; }
   .info-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--z-gray-400); color: var(--z-gray-400); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor: default; flex-shrink: 0; }
@@ -425,9 +448,9 @@
 
       <!-- PAGE: Screenshots per OS -->
       <div class="page active" id="page-os">
-        <div class="global-row">
+        <div class="global-row" style="margin-bottom:20px;">
           <div class="section-label">Screenshots per OS</div>
-          <div class="section-desc">Control whether screenshots are captured on each operating system.<br>Disabling an OS overrides individual member settings — no screenshots will be taken on that platform regardless of member configuration.</div>
+          <div class="section-desc" style="margin-bottom:0;">Control whether screenshots are captured on each operating system.</div>
         </div>
         <div class="alert alert-info" style="margin-bottom:20px;">
           <div class="alert-inner-wrapper">
@@ -452,7 +475,7 @@
                 <div class="os-desc" id="desc-mac">Taking screenshots for all members on macOS</div>
               </div>
             </div>
-            <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-mac" onchange="updateDesc('mac','macOS',this.checked,this)"><div class="toggle-switch"></div></label>
+            <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-mac" onchange="requestToggle('mac','macOS',this)"><div class="toggle-switch"></div></label>
           </div>
           <div class="os-row">
             <div class="os-row-left">
@@ -462,7 +485,7 @@
                 <div class="os-desc" id="desc-win">Taking screenshots for all members on Windows</div>
               </div>
             </div>
-            <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-win" onchange="updateDesc('win','Windows',this.checked,this)"><div class="toggle-switch"></div></label>
+            <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-win" onchange="requestToggle('win','Windows',this)"><div class="toggle-switch"></div></label>
           </div>
           <div class="os-row">
             <div class="os-row-left">
@@ -472,7 +495,7 @@
                 <div class="os-desc" id="desc-linux">Taking screenshots for all members on Linux</div>
               </div>
             </div>
-            <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-linux" onchange="updateDesc('linux','Linux',this.checked,this)"><div class="toggle-switch"></div></label>
+            <label class="toggle-switch-wrapper"><input type="checkbox" checked id="os-linux" onchange="requestToggle('linux','Linux',this)"><div class="toggle-switch"></div></label>
           </div>
         </div>
       </div>
@@ -605,6 +628,28 @@
   </div>
 </div>
 
+<!-- Confirmation modal -->
+<dialog class="confirm-modal" id="os-confirm-modal">
+  <form class="cm-form" method="dialog">
+    <div class="cm-body">
+      <div class="cm-header">
+        <span class="cm-title" id="cm-title"></span>
+        <button class="cm-close" type="button" onclick="cancelToggle()">&#x2715;</button>
+      </div>
+      <div class="cm-message">
+        <div class="cm-icon-wrap" id="cm-icon-wrap">
+          <i id="cm-icon" style="font-size:14px;"></i>
+        </div>
+        <div id="cm-message"></div>
+      </div>
+    </div>
+    <div class="cm-footer">
+      <button class="cm-btn-cancel" type="button" onclick="cancelToggle()">Cancel</button>
+      <button class="cm-btn-confirm" id="cm-confirm-btn" type="button" onclick="confirmToggle()"></button>
+    </div>
+  </form>
+</dialog>
+
 <script>
   function switchView(id, btn) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -633,11 +678,51 @@
     btn.parentElement.querySelectorAll('button').forEach((b, i) => b.classList.toggle('active', i === index));
   }
 
-  function updateDesc(id, osName, isOn, input) {
+  let _pendingToggle = null;
+
+  function requestToggle(id, osName, input) {
+    const isOn = input.checked;
+    // revert toggle visually until confirmed
+    input.checked = !isOn;
+    _pendingToggle = { id, osName, isOn, input };
+
+    const modal  = document.getElementById('os-confirm-modal');
+    const iconWrap = document.getElementById('cm-icon-wrap');
+    const icon     = document.getElementById('cm-icon');
+    const confirmBtn = document.getElementById('cm-confirm-btn');
+
+    iconWrap.className = 'cm-icon-wrap warning';
+    icon.className     = 'fa-solid fa-triangle-exclamation';
+    confirmBtn.className = 'cm-btn-confirm';
+
+    if (isOn) {
+      document.getElementById('cm-title').textContent  = `Enable screenshots on ${osName}?`;
+      document.getElementById('cm-message').innerHTML = `You're turning on screenshot capture for all members on <strong>${osName}</strong>. Screenshots will resume based on each member's individual settings.`;
+      confirmBtn.textContent = `Enable ${osName}`;
+    } else {
+      document.getElementById('cm-title').textContent  = `Disable screenshots on ${osName}?`;
+      document.getElementById('cm-message').innerHTML = `You're turning off screenshot capture for all members on <strong>${osName}</strong>.<br>No screenshots will be taken regardless of individual member settings.`;
+      confirmBtn.textContent = `Disable ${osName}`;
+    }
+
+    modal.showModal();
+  }
+
+  function confirmToggle() {
+    if (!_pendingToggle) return;
+    const { id, osName, isOn, input } = _pendingToggle;
+    input.checked = isOn;
     document.getElementById('desc-' + id).textContent = isOn
       ? `Taking screenshots for all members on ${osName}`
       : `Not taking screenshots for members on ${osName}`;
     input.closest('.os-row').querySelector('.os-row-left').classList.toggle('dimmed', !isOn);
+    _pendingToggle = null;
+    document.getElementById('os-confirm-modal').close();
+  }
+
+  function cancelToggle() {
+    _pendingToggle = null;
+    document.getElementById('os-confirm-modal').close();
   }
 </script>
 </body>
